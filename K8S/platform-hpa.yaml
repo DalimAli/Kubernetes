@@ -1,0 +1,50 @@
+# Run this in a separate terminal
+# so that the load generation continues and you can carry on with the rest of the steps
+# kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://platform-service-node-port/api/p/platform; done"
+
+# use 1 from below 2
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: platform-depl-hpa
+spec:
+  minReplicas: 1
+  maxReplicas: 15
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: platforms-depl
+  targetCPUUtilizationPercentage: 10
+# ---
+
+# apiVersion: autoscaling/v2beta2
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: platform-depl-hpa-vb2
+# spec:
+#   scaleTargetRef:
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     name: platforms-depl
+#   minReplicas: 1
+#   maxReplicas: 20
+#   metrics:
+#   - type: Resource
+#     resource:
+#       name: cpu
+#       target:
+#         type: Utilization
+#         averageUtilization: 30
+#   - type: Resource
+#     resource:
+#       name: memory
+#       target:
+#         type: Utilization
+#         averageUtilization: 5
+# status:
+#   conditions:
+#     - status: Success
+#       type: Resource
+#   currentReplicas: 1
+#   desiredReplicas: 1
+
